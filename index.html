@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>概念学习树</title>
+  <style>
+    /* ===== 设计令牌（来源：Notion DESIGN.md，awesome-design-md；替换第一轮 1.5 的紫罗兰通用方案）=====
+       原则：暖白底 + 单一强调色（Notion 紫，克制使用）+ 暖灰家族 + 几乎无阴影、边框分层 */
+    :root {
+      --ct-primary: #5645d4;
+      --ct-primary-hover: #4534b3;
+      --ct-on-primary: #ffffff;
+      --ct-link: #0075de;
+      --ct-bg: #ffffff;            /* canvas */
+      --ct-panel: #ffffff;         /* 卡片/弹层面板表面（第二轮 2c 暗色覆盖点） */
+      --ct-surface: #f6f5f4;       /* chrome 次级表面 */
+      --ct-surface-soft: #fafaf9;
+      --ct-fg: #37352f;            /* charcoal ink */
+      --ct-fg-secondary: #5d5b54;  /* slate */
+      --ct-fg-tertiary: #787671;   /* steel */
+      --ct-fg-muted: #a4a097;      /* stone */
+      --ct-border: #e5e3df;        /* hairline */
+      --ct-border-soft: #ede9e4;   /* hairline-soft */
+      --ct-border-strong: #c8c4be; /* hairline-strong */
+      --ct-hover: rgba(55, 53, 47, 0.08);
+      --ct-destructive: #e03131;
+      --ct-ring: #5645d4;
+      /* 第二轮 2c：暗色主题需要的派生令牌（点阵/玻璃面/代码底/连线/警示边） */
+      --ct-dot: rgba(55, 53, 47, 0.10);
+      --ct-panel-glass: rgba(255, 255, 255, 0.92);
+      --ct-code-bg: rgba(55, 53, 47, 0.07);
+      --ct-edge-parent: #8f8b83;
+      --ct-edge-related: #c09553;
+      --ct-warn-border: #e3b341;
+      /* 状态语义（Notion 粉彩标签系） */
+      --ct-st-unlearned: #5d5b54;
+      --ct-st-unlearned-bg: #f0eeec;
+      --ct-st-unlearned-border: #a4a097;
+      --ct-st-learning: #0075de;
+      --ct-st-learning-bg: #dcecfa;
+      --ct-st-learning-border: #0075de;
+      --ct-st-learned: #0e8a3c;
+      --ct-st-learned-bg: #d9f3e1;
+      --ct-st-learned-border: #1aae39;
+      --ct-st-doubtful: #b26a00;
+      --ct-st-doubtful-bg: #fef7d6;
+      --ct-st-doubtful-border: #e3b341;
+      /* 强调粉彩（复习/提示块） */
+      --ct-tint-lavender: #e6e0f5;
+      --ct-tint-yellow: #fef7d6;
+      --ct-tint-peach: #ffe8d4;
+      --ct-tint-mint: #d9f3e1;
+      /* 第二轮 2a：日历热力图档位（薄荷绿阶） */
+      --ct-cal-1: #e7f6ec;
+      --ct-cal-2: #bfe7cd;
+      --ct-cal-3: #7fd3a0;
+      /* 第七轮（UI 大幅优化）：玻璃面板 / 动效令牌（主题切换只改颜色，形状动效不变） */
+      --ct-glass-bg: rgba(255, 255, 255, 0.5);
+      --ct-glass-border: rgba(255, 255, 255, 0.55);
+      --ct-card-hover-shadow: 0 6px 18px rgba(55, 53, 47, 0.12);
+      --ct-glow-primary: rgba(86, 69, 212, 0.30);
+      --ct-spark: #6f5fe6;
+      --ct-map-line: #8c959f;
+      --ct-canvas-wash: rgba(86, 69, 212, 0.055);
+      --ct-primary-soft: rgba(86, 69, 212, 0.28);
+      --ct-card-hover-lift: 0 12px 28px rgba(55, 53, 47, 0.16);
+      /* 第十轮：系列内朦胧 veil / 侧栏半透明 / 玻璃概念卡 */
+      --ct-veil: rgba(250, 250, 249, 0.4);
+      --ct-panel-trans: rgba(255, 255, 255, 0.55);
+      --ct-card-glass-top: rgba(255, 255, 255, 0.6);
+      --ct-card-glass-bottom: rgba(255, 255, 255, 0.15);
+      --ct-card-glass-border: rgba(255, 255, 255, 0.6);
+      --ct-card-band: rgba(255, 255, 255, 0.35);
+      --ct-card-deep-shadow: 0 18px 28px rgba(55, 53, 47, 0.18);
+      /* 圆角与阴影（Notion：扁平 + 分层阴影，暖色调） */
+      --ct-radius-sm: 8px;
+      --ct-radius-md: 12px;
+      --ct-radius-lg: 14px;
+      --ct-shadow-1: 0 1px 2px rgba(55,53,47,.06), 0 2px 6px rgba(55,53,47,.04);
+      --ct-shadow-2: 0 2px 6px rgba(55,53,47,.08), 0 6px 16px rgba(55,53,47,.06);
+      --ct-shadow-4: 0 8px 24px rgba(55,53,47,.14), 0 16px 48px rgba(55,53,47,.10);
+      --ct-font-display: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      --ct-font-body: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; }
+    body {
+      font-family: var(--ct-font-body);
+      background: var(--ct-bg);
+      color: var(--ct-fg);
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { font-family: var(--ct-font-display); letter-spacing: -0.02em; }
+    button { font-family: inherit; }
+    /* 键盘可见焦点（可访问性优先） */
+    :focus-visible { outline: 2px solid var(--ct-ring); outline-offset: 2px; border-radius: 4px; }
+    /* 细滚动条（暖灰） */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: var(--ct-border-strong); border-radius: 999px; border: 2px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--ct-fg-muted); border: 2px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    /* 画布点阵背景：暖灰点阵 + 两团主题色微光晕（可控、随主题变化） */
+    .ct-canvas-dots {
+      background-color: var(--ct-surface-soft);
+      background-image:
+        radial-gradient(900px 480px at 18% -8%, var(--ct-canvas-wash), transparent 65%),
+        radial-gradient(760px 430px at 106% 106%, var(--ct-canvas-wash), transparent 60%),
+        radial-gradient(circle, var(--ct-dot) 1px, transparent 1px);
+      background-size: auto, auto, 22px 22px;
+    }
+    ::selection { background: var(--ct-tint-lavender); color: var(--ct-primary); }
+
+    /* ===== 按钮体系 2.0（第七轮彻底改造：悬浮 + 发光 + 渐变主按钮）===== */
+    .ct-btn {
+      display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+      border-radius: 10px; border: 1px solid var(--ct-border);
+      background: var(--ct-panel); color: var(--ct-fg); font-size: 13px; font-weight: 500; padding: 6px 12px;
+      font-family: inherit;
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease, color .16s ease, filter .16s ease;
+    }
+    .ct-btn:hover { background: var(--ct-hover); border-color: var(--ct-border-strong); transform: translateY(-1px); box-shadow: var(--ct-shadow-1); }
+    .ct-btn:active { transform: translateY(0) scale(.98); box-shadow: none; }
+    .ct-btn:disabled { opacity: .45; cursor: default; transform: none; box-shadow: none; }
+    .ct-btn-primary {
+      background: linear-gradient(135deg, var(--ct-primary), var(--ct-primary-hover));
+      border-color: transparent; color: var(--ct-on-primary);
+      box-shadow: 0 2px 12px var(--ct-glow-primary);
+    }
+    .ct-btn-primary:hover { background: linear-gradient(135deg, var(--ct-primary), var(--ct-primary-hover)); border-color: transparent; filter: brightness(1.09); box-shadow: 0 5px 22px var(--ct-glow-primary); }
+    .ct-btn-danger { color: var(--ct-destructive); }
+    .ct-btn-danger:hover { background: rgba(224, 49, 49, .07); border-color: rgba(224, 49, 49, .4); }
+    .ct-btn-ghost { border-color: transparent; background: transparent; }
+    .ct-btn-ghost:hover { background: var(--ct-hover); border-color: transparent; box-shadow: none; }
+
+    /* 输入框：聚焦发光环（全局统一，设置/搜索/对话同效果） */
+    .ct-input {
+      border: 1px solid var(--ct-border); border-radius: 10px;
+      padding: 8px 12px; font-size: 13px; font-family: inherit; color: var(--ct-fg);
+      background: var(--ct-panel); transition: border-color .18s ease, box-shadow .18s ease;
+    }
+    .ct-input::placeholder { color: var(--ct-fg-muted); }
+    .ct-input:focus { border-color: var(--ct-primary); outline: none; box-shadow: 0 0 0 3px var(--ct-glow-primary), 0 0 18px var(--ct-glow-primary); }
+
+    /* 画布悬浮玻璃工具栏与工具按钮 */
+    .ct-toolbar-float {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 30;
+      display: flex; align-items: center; gap: 3px; flex-wrap: wrap; justify-content: center;
+      max-width: calc(100% - 20px);
+      background: var(--ct-glass-bg);
+      backdrop-filter: blur(12px) saturate(1.15); -webkit-backdrop-filter: blur(12px) saturate(1.15);
+      border: 1px solid var(--ct-glass-border); border-radius: 14px; padding: 5px 6px;
+      box-shadow: var(--ct-shadow-2);
+    }
+    .ct-toolbar-sep { width: 1px; height: 20px; background: var(--ct-border); margin: 0 3px; flex: none; }
+    .ct-tool {
+      display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+      border: 1px solid transparent; background: transparent; color: var(--ct-fg-secondary);
+      border-radius: 9px; padding: 6px 9px; font-size: 12px; font-weight: 500; font-family: inherit;
+      transition: background .15s ease, color .15s ease, box-shadow .15s ease, transform .15s ease;
+      white-space: nowrap;
+    }
+    .ct-tool:hover { background: var(--ct-hover); color: var(--ct-fg); transform: translateY(-1px); box-shadow: 0 0 0 1px var(--ct-border), 0 0 14px var(--ct-glow-primary); }
+    .ct-tool:active { transform: translateY(0) scale(.97); }
+    .ct-tool:disabled { opacity: .4; cursor: default; box-shadow: none; background: transparent; transform: none; }
+    .ct-tool-active, .ct-tool-active:hover { background: var(--ct-tint-lavender); color: var(--ct-primary); box-shadow: 0 0 0 1px var(--ct-primary-soft); transform: none; }
+    .ct-tool-due, .ct-tool-due:hover { color: #b26a00; background: var(--ct-tint-yellow); border-color: var(--ct-warn-border); box-shadow: 0 0 14px rgba(227, 179, 65, .4); animation: ct-breathe 2s ease-in-out infinite; }
+    .ct-card-hover { transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease; }
+    .ct-card-hover:hover { box-shadow: var(--ct-card-hover-lift); border-color: var(--ct-border-strong); transform: translateY(-1px); }
+    .ct-menu-item:hover { background: var(--ct-tint-lavender); }
+    .ct-menu-item:active { background: var(--ct-primary-soft); }
+    .ct-nums { font-variant-numeric: tabular-nums; }
+
+    /* 第二轮 2a：日历格子与热力档位 */
+    .ct-cal-cell { transition: border-color .15s ease; }
+    .ct-cal-cell:hover { border-color: var(--ct-border-strong); }
+    .ct-cal-t1 { background: var(--ct-cal-1); }
+    .ct-cal-t2 { background: var(--ct-cal-2); }
+    .ct-cal-t3 { background: var(--ct-cal-3); }
+
+    /* ===== 第七轮（UI 大幅优化）：组件级样式，全部走令牌，双主题自适应 ===== */
+
+    /* 滑动分段标签（对话/笔记切换；弹性 glider，主题色发光） */
+    .ct-slide-tabs { position: relative; display: flex; background: var(--ct-surface); border: 1px solid var(--ct-border); border-radius: 999px; padding: 3px; isolation: isolate; flex: none; }
+    .ct-slide-tabs button { flex: 1; position: relative; z-index: 2; border: none; background: transparent; padding: 6px 12px; font-size: 13px; font-weight: 500; color: var(--ct-fg-tertiary); cursor: pointer; border-radius: 999px; font-family: inherit; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: color .25s ease; white-space: nowrap; min-width: 0; }
+    .ct-slide-tabs button[aria-selected="true"] { color: var(--ct-fg); font-weight: 600; }
+    .ct-slide-tabs button:hover { color: var(--ct-fg-secondary); }
+    .ct-slide-glider { position: absolute; top: 3px; bottom: 3px; left: 3px; z-index: 1; border-radius: 999px; background: var(--ct-panel); border: 1px solid var(--ct-border); box-shadow: var(--ct-shadow-1), 0 0 14px var(--ct-glow-primary); transition: transform .35s cubic-bezier(.37, 1.55, .5, 1), width .35s ease; pointer-events: none; }
+
+    /* 自定义下拉（替代原生 select：可 hover 高亮/发光、跟随主题） */
+    .ct-fs { position: relative; display: inline-flex; min-width: 0; }
+    .ct-fs-btn { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--ct-border); background: var(--ct-panel); color: var(--ct-fg-secondary); border-radius: 9px; padding: 5px 10px; font-size: 12px; font-family: inherit; transition: border-color .15s ease, background .15s ease, box-shadow .15s ease, transform .15s ease; min-width: 0; }
+    .ct-fs-btn:hover { border-color: var(--ct-border-strong); background: var(--ct-hover); transform: translateY(-1px); box-shadow: 0 0 12px var(--ct-glow-primary); }
+    .ct-fs-btn:focus-visible { box-shadow: 0 0 0 3px var(--ct-glow-primary); outline: none; }
+    .ct-fs-caret { transition: transform .2s ease; flex: none; }
+    .ct-fs-btn[aria-expanded="true"] .ct-fs-caret { transform: rotate(180deg); }
+    .ct-fs-list { position: absolute; top: calc(100% + 4px); left: 0; min-width: 100%; z-index: 130; background: var(--ct-panel); border: 1px solid var(--ct-border); border-radius: var(--ct-radius-sm); box-shadow: var(--ct-shadow-2); padding: 4px; display: flex; flex-direction: column; gap: 1px; max-height: 240px; overflow: auto; }
+    .ct-fs-option { border: none; background: transparent; text-align: left; padding: 6px 10px; font-size: 12px; color: var(--ct-fg); border-radius: 6px; cursor: pointer; font-family: inherit; white-space: nowrap; transition: background .12s ease, color .12s ease, box-shadow .12s ease; }
+    .ct-fs-option:hover, .ct-fs-option.ct-fs-hl { background: var(--ct-tint-lavender); color: var(--ct-primary); box-shadow: 0 0 10px var(--ct-glow-primary); }
+    .ct-fs-option[aria-selected="true"] { font-weight: 600; }
+
+    /* 画布卡片：基础阴影来自这里（勿在组件里写内联基础阴影，否则 hover 失效——第七轮修复） */
+    .ct-card { box-shadow: var(--ct-shadow-1); transition: box-shadow .2s ease, transform .2s ease; }
+    .ct-card:not(.ct-card-active):hover { box-shadow: var(--ct-card-hover-lift); transform: translateY(-2px); }
+
+    /* AI 思考中：行内小圆点（小而跟手，不做大动画） */
+    @keyframes ct-dot-pulse {
+      0%, 80%, 100% { opacity: .25; transform: scale(.85); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+    .ct-thinking { display: inline-flex; align-items: center; gap: 3px; }
+    .ct-thinking-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ct-fg-muted); display: inline-block; animation: ct-dot-pulse 1.1s infinite ease-in-out; }
+    .ct-thinking-dot:nth-child(2) { animation-delay: .15s; }
+    .ct-thinking-dot:nth-child(3) { animation-delay: .3s; }
+
+    /* 统计条形：入场展开动画（宽度由内联样式驱动） */
+    .ct-dist-bar { transition: width .6s cubic-bezier(.25, .8, .3, 1); }
+
+    /* 热力格：入场缩放 */
+    @keyframes ct-heat-in { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
+    .ct-heat-cell { animation: ct-heat-in .3s ease backwards; }
+
+    /* 弹层玻璃面板（第八轮：透明度提高见质感 + 噪声纹理不影响文字） */
+    .ct-glass { background: var(--ct-glass-bg) !important; backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2); border: 1px solid var(--ct-glass-border) !important; isolation: isolate; }
+    .ct-glass::before {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: -1; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: .05;
+    }
+    [data-theme="dark"] .ct-glass::before { opacity: .08; }
+
+    /* 第七轮：聊天输入容器（聚焦发光，border 走令牌） */
+    .ct-chat-box { border: 1px solid var(--ct-border); border-radius: var(--ct-radius-md); padding: 8px; background: var(--ct-panel); transition: border-color .2s ease, box-shadow .2s ease; }
+    .ct-chat-box:focus-within { border-color: var(--ct-primary); box-shadow: 0 0 0 3px var(--ct-glow-primary); }
+
+    /* 第七轮：系列卡聚光覆盖（替换组件自带深色硬编码，双主题自适应） */
+    .ct-series-spot { flex: 1; min-width: 0; display: flex; background: var(--ct-panel); border: 1px solid var(--ct-border); border-radius: var(--ct-radius-md); padding: 0; transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease; }
+    .ct-series-spot::before { border-radius: var(--ct-radius-md); }
+    .ct-series-spot:hover::before, .ct-series-spot:focus-within::before { opacity: 1; }
+    .ct-series-spot:hover, .ct-series-spot:focus-within { box-shadow: var(--ct-card-hover-lift), 0 0 0 1px var(--ct-primary-soft); border-color: var(--ct-primary-soft); transform: translateY(-1px); }
+    .ct-series-spot > button { width: 100%; background: transparent !important; border: none !important; box-shadow: none !important; }
+
+    /* 第七轮彻底改造：渐变流光标题 / 入场动画 / 复习揭示钮 */
+    .ct-gradient-text {
+      background: linear-gradient(115deg, var(--ct-primary) 15%, var(--ct-link) 50%, var(--ct-primary) 85%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent; -webkit-text-fill-color: transparent;
+      animation: ct-shine-slow 7s linear infinite;
+    }
+    @keyframes ct-shine-slow { to { background-position: 200% center; } }
+    @keyframes ct-rise { from { opacity: 0; transform: translateY(14px); } }
+    .ct-rise { animation: ct-rise .5s cubic-bezier(.22, .7, .3, 1) backwards; }
+    @keyframes ct-pop { from { opacity: 0; transform: scale(.96) translateY(8px); } }
+    .ct-pop { animation: ct-pop .26s cubic-bezier(.2, .9, .3, 1.15); }
+    /* 第八轮：弹层出场动画（关闭时反向播放，不再"瞬灭"） */
+    @keyframes ct-pop-out { to { opacity: 0; } }
+    /* 第九轮反馈 #3：出场只做透明度淡出并移除 backdrop-filter，避免大弹层出场卡顿 */
+    .ct-pop-out { animation: ct-pop-out .16s ease forwards; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+    @keyframes ct-fade-out { to { opacity: 0; } }
+    .ct-fade-out { animation: ct-fade-out .16s ease forwards; }
+
+    /* 第八轮：圆形光晕工具按钮（素材「按钮2」适配：玻璃圆钮 + 扫光 + 发光环） */
+    .ct-orb {
+      position: relative; width: 34px; height: 34px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; border: 1px solid var(--ct-glass-border);
+      background: var(--ct-glass-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      color: var(--ct-fg-secondary); overflow: hidden;
+      transition: color .2s ease, box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+    }
+    .ct-orb::before {
+      content: ""; position: absolute; inset: 0; border-radius: 50%;
+      background: linear-gradient(100deg, transparent 30%, var(--ct-glow-primary) 50%, transparent 70%);
+      transform: translateX(-100%); transition: transform .5s ease; pointer-events: none;
+    }
+    .ct-orb:hover { color: var(--ct-primary); border-color: var(--ct-primary-soft); box-shadow: 0 0 14px var(--ct-glow-primary); transform: translateY(-1px); }
+    .ct-orb:hover::before { transform: translateX(100%); }
+    .ct-orb:active { transform: scale(.94); }
+    .ct-orb:disabled { opacity: .4; cursor: default; box-shadow: none; transform: none; }
+    .ct-orb-active, .ct-orb-active:hover { background: var(--ct-tint-lavender); color: var(--ct-primary); box-shadow: 0 0 0 1px var(--ct-primary-soft), 0 0 14px var(--ct-glow-primary); }
+    .ct-orb-due, .ct-orb-due:hover { color: #b26a00; background: var(--ct-tint-yellow); border-color: var(--ct-warn-border); box-shadow: 0 0 14px rgba(227,179,65,.45); animation: ct-breathe 2s ease-in-out infinite; }
+    /* 带文字的胶囊工具钮（布局/系列等） */
+    .ct-orb-pill { width: auto; border-radius: 999px; padding: 0 12px; gap: 6px; font-size: 12px; font-weight: 500; font-family: inherit; height: 34px; }
+
+    /* 第九轮反馈 #4：概念卡悬停回退上一版（轻柔浮起，信息在悬浮浮层查看） */
+    .ct-card:not(.ct-card-active):hover { box-shadow: var(--ct-card-hover-lift); transform: translateY(-2px); }
+
+    /* 第十轮：玻璃概念卡（素材「概念卡片替换」适配：顶部渐变玻璃 + 底部标签条；功能全保留） */
+    .ct-glasscard {
+      background: linear-gradient(180deg, var(--ct-card-glass-top), var(--ct-card-glass-bottom));
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--ct-card-glass-border);
+      border-radius: 10px;
+      box-shadow: var(--ct-card-deep-shadow);
+    }
+    .ct-card.ct-glasscard:not(.ct-card-active):hover { box-shadow: var(--ct-card-hover-lift); transform: translateY(-2px); }
+
+    /* 第九轮反馈 #5：画布背景透明，让 Ferrofluid 应用背景透出来 */
+    .ct-canvas-dots { background-color: transparent; }
+
+    /* 第八轮：BorderGlow 边缘光辉 + 毛玻璃共存；亮色主题改 normal 混合避免过曝 */
+    .ct-glow-glass { backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2); }
+    /* 第九轮反馈 #1：只要边缘发光，不要整卡变色 → 关掉表面填充层 */
+    .ct-glow-glass::after { opacity: 0 !important; }
+    :root:not([data-theme="dark"]) .ct-glow-glass > .edge-light { mix-blend-mode: normal; opacity: .9; }
+    .ct-glow-wrap { flex: 1; min-width: 0; display: flex; }
+    .ct-glow-wrap > .border-glow-inner { flex: 1; display: flex; }
+    .ct-reveal { transition: filter .18s ease, transform .18s ease, box-shadow .18s ease; }
+    .ct-reveal:hover { filter: brightness(1.09); transform: translateY(-1px); box-shadow: 0 6px 26px var(--ct-glow-primary) !important; }
+
+    /* 第一轮：复习徽章呼吸灯（设计来源 StarMap 状态灯，见 DESIGN-REFERENCES §1） */
+    @keyframes ct-breathe {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.55; }
+    }
+    /* 第一轮：卡片位移过渡（自动布局/复习切卡用） */
+    .ct-flip { transition: transform 260ms cubic-bezier(.2,.7,.3,1); }
+    .ct-flip-pos { transition: left 280ms cubic-bezier(.2,.7,.3,1), top 280ms cubic-bezier(.2,.7,.3,1); }
+    @keyframes ct-card-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .ct-card-in { animation: ct-card-in 200ms cubic-bezier(.2,.7,.3,1); }
+    @keyframes ct-toast-in {
+      from { opacity: 0; transform: translate(-50%, 8px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    .ct-toast-in { animation: ct-toast-in 180ms cubic-bezier(.2,.7,.3,1); }
+    @media (prefers-reduced-motion: reduce) {
+      .ct-flip, .ct-flip-pos { transition: none !important; }
+      .ct-theme-anim, .ct-theme-anim * { transition: none !important; }
+      * { animation-duration: 0.01ms !important; }
+    }
+
+    /* 第十二轮：主题切换过渡（切换瞬间挂 .ct-theme-anim，500ms 后摘除） */
+    .ct-theme-anim, .ct-theme-anim *, .ct-theme-anim *::before, .ct-theme-anim *::after {
+      transition: background-color .45s ease, color .45s ease, border-color .45s ease, box-shadow .45s ease, fill .45s ease, stroke .45s ease !important;
+    }
+
+    /* 第十一轮：logo（白线稿；浅色反色为黑，深色保持白；主页加发光） */
+    .ct-logo-light { filter: invert(1); }
+    .ct-logo-dark { filter: none; }
+    .ct-logo-glow-light { filter: invert(1) drop-shadow(0 0 16px var(--ct-glow-primary)); }
+    .ct-logo-glow-dark { filter: drop-shadow(0 0 16px var(--ct-glow-primary)); }
+
+    /* 第十一轮：翻页倒计时（素材适配，双主题；reduced-motion 由全局规则降级） */
+    .ct-flip-wrap { display: inline-flex; align-items: center; gap: 3px; }
+    .ct-flip-digit {
+      position: relative; display: inline-block; width: 20px; height: 28px;
+      border-radius: 5px; border: 1px solid var(--ct-border); box-shadow: var(--ct-shadow-1);
+      font-family: var(--ct-font-body); font-weight: 700; color: var(--ct-fg);
+      perspective: 160px;
+    }
+    .ct-flip-half { position: absolute; left: 0; width: 100%; height: 50%; overflow: hidden; }
+    .ct-flip-half > span { position: absolute; left: 0; width: 100%; height: 200%; line-height: 28px; text-align: center; font-size: 15px; }
+    .ct-flip-top { top: 0; border-radius: 5px 5px 0 0; background: var(--ct-surface); }
+    .ct-flip-top > span { top: 0; }
+    .ct-flip-bottom { bottom: 0; border-radius: 0 0 5px 5px; background: var(--ct-panel); }
+    .ct-flip-bottom > span { bottom: 0; }
+    .ct-flip-midline { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--ct-border-strong); z-index: 4; }
+    @keyframes ct-flip-down { to { transform: rotateX(-90deg); } }
+    @keyframes ct-flip-up { from { transform: rotateX(90deg); } to { transform: rotateX(0deg); } }
+    .ct-flip-old-top { z-index: 3; transform-origin: 50% 100%; animation: ct-flip-down .3s ease-in both; }
+    .ct-flip-new-bottom { z-index: 2; transform-origin: 50% 0%; animation: ct-flip-up .3s .3s ease-out both; }
+    .ct-flip-label { font-size: 11px; color: var(--ct-fg-tertiary); margin-left: 4px; white-space: nowrap; }
+
+    /* ===== 第二轮 2c：暗色主题覆盖（Notion 暗色系）=====
+       只覆盖令牌，不改组件代码；body 背景随 --ct-bg，面板随 --ct-panel */
+    [data-theme="dark"] {
+      --ct-primary: #6f5fe6;
+      --ct-primary-hover: #8477ea;
+      --ct-on-primary: #ffffff;
+      --ct-link: #4da3ff;
+      --ct-bg: #191919;
+      --ct-panel: #202020;
+      --ct-surface: #242424;
+      --ct-surface-soft: #1f1f1f;
+      --ct-fg: #e8e6e3;
+      --ct-fg-secondary: #b9b6b0;
+      --ct-fg-tertiary: #8f8c86;
+      --ct-fg-muted: #6f6c66;
+      --ct-border: #373737;
+      --ct-border-soft: #2e2e2e;
+      --ct-border-strong: #4a4a4a;
+      --ct-hover: rgba(255, 255, 255, 0.08);
+      --ct-destructive: #ff5c5c;
+      --ct-ring: #6f5fe6;
+      --ct-dot: rgba(255, 255, 255, 0.09);
+      --ct-panel-glass: rgba(32, 32, 32, 0.92);
+      --ct-code-bg: rgba(255, 255, 255, 0.12);
+      --ct-edge-parent: #a3a09a;
+      --ct-edge-related: #d0aa66;
+      --ct-warn-border: #d9a93f;
+      /* 状态色：暗底亮字（Notion 暗色标签风格） */
+      --ct-st-unlearned: #b9b6b0;
+      --ct-st-unlearned-bg: #2e2e2e;
+      --ct-st-unlearned-border: #7a776f;
+      --ct-st-learning: #4da3ff;
+      --ct-st-learning-bg: #1a3a52;
+      --ct-st-learning-border: #4da3ff;
+      --ct-st-learned: #4bc377;
+      --ct-st-learned-bg: #1c3a29;
+      --ct-st-learned-border: #3ba55f;
+      --ct-st-doubtful: #e0b04f;
+      --ct-st-doubtful-bg: #43351a;
+      --ct-st-doubtful-border: #d9a93f;
+      /* 提示粉彩 → 暗底 */
+      --ct-tint-lavender: #2e2a4d;
+      --ct-tint-yellow: #43351a;
+      --ct-tint-peach: #4a2e1c;
+      --ct-tint-mint: #1c3a29;
+      /* 日历档位 */
+      --ct-cal-1: #22352a;
+      --ct-cal-2: #2c4d39;
+      --ct-cal-3: #376b4d;
+      /* 阴影加重（暗色下层次感） */
+      --ct-shadow-1: 0 1px 2px rgba(0,0,0,.40), 0 2px 6px rgba(0,0,0,.30);
+      --ct-shadow-2: 0 2px 6px rgba(0,0,0,.45), 0 6px 16px rgba(0,0,0,.35);
+      --ct-shadow-4: 0 8px 24px rgba(0,0,0,.55), 0 16px 48px rgba(0,0,0,.45);
+      /* 第七轮：玻璃/动效令牌（暗色值） */
+      --ct-glass-bg: rgba(30, 30, 30, 0.5);
+      --ct-glass-border: rgba(255, 255, 255, 0.12);
+      --ct-card-hover-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+      --ct-glow-primary: rgba(139, 127, 240, 0.38);
+      --ct-spark: #8b7ff0;
+      --ct-map-line: #6f6c66;
+      --ct-canvas-wash: rgba(139, 127, 240, 0.09);
+      --ct-primary-soft: rgba(139, 127, 240, 0.32);
+      --ct-card-hover-lift: 0 12px 28px rgba(0, 0, 0, 0.5);
+      --ct-veil: rgba(18, 18, 18, 0.4);
+      --ct-panel-trans: rgba(28, 28, 28, 0.55);
+      --ct-card-glass-top: rgba(255, 255, 255, 0.1);
+      --ct-card-glass-bottom: rgba(255, 255, 255, 0.03);
+      --ct-card-glass-border: rgba(255, 255, 255, 0.16);
+      --ct-card-band: rgba(255, 255, 255, 0.06);
+      --ct-card-deep-shadow: 0 18px 28px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

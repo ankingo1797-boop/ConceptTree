@@ -1,0 +1,37 @@
+{
+  "name": "concept-tree-app",
+  "private": true,
+  "version": "0.1.0",
+  "description": "概念学习树 — 独立 Web 应用：树形概念学习网，自带 OpenAI 兼容 AI 接入",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "node server.js",
+    "app": "electron electron/main.js",
+    "test": "vitest run",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "gsap": "^3.15.0",
+    "motion": "^12.43.0",
+    "ogl": "^1.0.11",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.30.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@vitejs/plugin-react": "^4.3.0",
+    "electron": "^44.0.0",
+    "jsdom": "^26.1.0",
+    "typescript": "^7.0.2",
+    "vite": "^6.0.0",
+    "vitest": "^3.2.4"
+  }
+}
