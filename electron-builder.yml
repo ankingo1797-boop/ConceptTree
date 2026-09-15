@@ -1,0 +1,44 @@
+# 概念学习树 — electron-builder 打包配置（第十八轮）
+# 用法：先 npm install（拉 electron-builder），再 npm run dist（内部会先 npm run build）
+# 产物输出到 release/：NSIS 安装包 + 便携版 exe。安装包体积大，走 GitHub Release 附件，不进 git。
+appId: com.concepttree.desktop
+productName: 概念学习树
+
+directories:
+  output: release
+  buildResources: build
+
+# 运行时只需这些（server.js 零第三方运行时依赖；前端已打进 dist/），不打包 node_modules 保持精简
+files:
+  - "dist/**"
+  - "server.js"
+  - "server/**"
+  - "dpapi.js"
+  - "electron/**"
+  - "package.json"
+
+asar: true
+
+win:
+  icon: build/icon.png
+  # 不签名、不改写 exe 元数据：跳过 winCodeSign（其包内含符号链接，非管理员/未开"开发者模式"的 Windows 解压会失败）
+  signAndEditExecutable: false
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  artifactName: "${productName}-${version}-setup.${ext}"
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: 概念学习树
+
+portable:
+  artifactName: "${productName}-${version}-portable.${ext}"
